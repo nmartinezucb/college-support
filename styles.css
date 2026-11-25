@@ -203,6 +203,30 @@ h1 {
   font-weight: 600;
 }
 
+/* New ticket button with the site's QR code to its right */
+.newTicket-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* White backing keeps the code scannable in dark mode */
+.qr {
+  display: block;
+  width: 96px;
+  height: 96px;
+  padding: 4px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+/* Hide the QR code on phones: anyone there is already on the site */
+@media (max-width: 700px) {
+  .qr {
+    display: none;
+  }
+}
+
 .status-line {
   color: var(--muted);
   font-size: 0.85rem;
