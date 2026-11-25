@@ -26,6 +26,12 @@
   --done-bg: #e5f5eb;
 
   --error: #b42318;
+
+  /* Background image
+     To remove it, change this line to:  --bg-image: none;
+     The --bg color above then shows instead. */
+  --bg-image: url("bg-1-web.jpg");
+  --bg-overlay: transparent; /* tint over the image */
 }
 
 /* ---------- Colors (dark mode) ---------- */
@@ -44,6 +50,9 @@
     --done-bg: #143222;
 
     --error: #ff8a80;
+
+    /* Darken the background image a little in dark mode */
+    --bg-overlay: rgba(10, 16, 24, 0.45);
   }
 }
 
@@ -93,6 +102,20 @@ body {
   font: 16px/1.5 "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   background: var(--bg);
   color: var(--text);
+}
+
+/* Background image: pinned behind the page so it stays put while scrolling.
+   A separate layer is used because "background-attachment: fixed"
+   doesn't work on iPhones. Turn it off with --bg-image in :root. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+    var(--bg-image) center bottom / cover no-repeat,
+    var(--bg);
 }
 
 /* Headings use the serif brand face */
