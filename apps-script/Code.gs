@@ -8,17 +8,25 @@
  *
  * Sheet layout (rows 1-2 are headers, tickets start on row 3):
  *   A Time Created | B Name | C Support Type | D Requesting support to (Mr. Martinez and/or Ms. Alanna)
- *   E Location     | F Ticket Status (adviser dropdown) | G Notes
+ *   E Location     | F Completed (time, filled in automatically) | G Ticket Status (adviser dropdown)
+ *   H Notes
+ *
+ * Column F is stamped by onEdit() below whenever an adviser sets column G to
+ * "Completed". onEdit is a "simple trigger": it runs on its own once this code
+ * is saved in the sheet's Apps Script editor, with no trigger setup needed.
  */
 
 const SHEET_NAME = 'Sheet1';
 const FIRST_DATA_ROW = 3;
-const STATUS_COLUMN = 6; // F
+const COMPLETED_COLUMN = 6; // F
+const STATUS_COLUMN = 7;    // G
 
-// Column F dropdown values.
+// Column G dropdown values.
 const DEFAULT_STATUS = 'Waiting for help';
 // These statuses go in the right-hand "Completed" column; everything else stays on the left.
 const CLOSED_STATUSES = ['Completed', 'Cancelled'];
+// Setting column G to this status stamps the time in column F.
+const COMPLETED_STATUS = 'Completed';
 
 function getSheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -45,7 +53,7 @@ function nextRow_(sheet) {
   return FIRST_DATA_ROW;
 }
 
-/** Form submission: writes one ticket into columns A-E and sets F to "Waiting for help". */
+/** Form submission: writes one ticket into columns A-E and sets G to "Waiting for help". */
 function doPost(e) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
@@ -61,7 +69,8 @@ function doPost(e) {
 
     const sheet = getSheet_();
     const row = nextRow_(sheet);
-    sheet.getRange(row, 1, 1, 6).setValues([[new Date(), name, supportType, adviser, location, DEFAULT_STATUS]]);
+    sheet.getRange(row, 1, 1, 5).setValues([[new Date(), name, supportType, adviser, location]]);
+    sheet.getRange(row, STATUS_COLUMN).setValue(DEFAULT_STATUS);
     return json_({ ok: true, row: row });
   } catch (err) {
     return json_({ ok: false, error: String(err) });
@@ -70,7 +79,7 @@ function doPost(e) {
   }
 }
 
-/** Status board: returns every ticket with its status from column F. */
+/** Status board: returns every ticket with its status (G) and completed time (F). */
 function doGet() {
   const sheet = getSheet_();
   const last = sheet.getLastRow();
@@ -80,10 +89,11 @@ function doGet() {
   const tickets = [];
   rows.forEach(function (r, i) {
     if (r[0] === '' && r[1] === '') return; // skip empty rows
-    const status = String(r[5] || '').trim();
+    const status = String(r[STATUS_COLUMN - 1] || '').trim();
     tickets.push({
       id: FIRST_DATA_ROW + i,
-      created: r[0] instanceof Date ? r[0].toISOString() : String(r[0]),
+      created: toIso_(r[0]),
+      completedAt: toIso_(r[COMPLETED_COLUMN - 1]),
       name: publicName_(r[1]),
       supportType: String(r[2]),
       adviser: String(r[3]),
@@ -93,6 +103,50 @@ function doGet() {
     });
   });
   return json_({ ok: true, tickets: tickets });
+}
+
+function toIso_(value) {
+  if (value instanceof Date) return value.toISOString();
+  return String(value || '');
+}
+
+/**
+ * Runs automatically whenever someone edits the sheet by hand.
+ * Status (G) set to "Completed": stamps the current time in F (if F is empty).
+ * Status changed away from "Completed": clears F so it can be stamped again.
+ */
+function onEdit(e) {
+  const range = e && e.range;
+  if (!range) return;
+  const sheet = range.getSheet();
+  if (sheet.getName() !== getSheet_().getName()) return;
+
+  // Ignore edits that don't touch column G below the headers.
+  const firstCol = range.getColumn();
+  const lastCol = firstCol + range.getNumColumns() - 1;
+  if (STATUS_COLUMN < firstCol || STATUS_COLUMN > lastCol) return;
+  const firstRow = Math.max(range.getRow(), FIRST_DATA_ROW);
+  const lastRow = range.getRow() + range.getNumRows() - 1;
+  if (lastRow < firstRow) return;
+
+  // Handles one cell or a pasted block of several rows.
+  const count = lastRow - firstRow + 1;
+  const statuses = sheet.getRange(firstRow, STATUS_COLUMN, count, 1).getValues();
+  const stampsRange = sheet.getRange(firstRow, COMPLETED_COLUMN, count, 1);
+  const stamps = stampsRange.getValues();
+  const now = new Date();
+  let changed = false;
+  for (let i = 0; i < count; i++) {
+    const isCompleted = String(statuses[i][0]).trim().toLowerCase() === COMPLETED_STATUS.toLowerCase();
+    if (isCompleted && stamps[i][0] === '') {
+      stamps[i][0] = now;
+      changed = true;
+    } else if (!isCompleted && stamps[i][0] !== '') {
+      stamps[i][0] = '';
+      changed = true;
+    }
+  }
+  if (changed) stampsRange.setValues(stamps);
 }
 
 /** Board is public, so show first name + last initial only ("Maria G."). */

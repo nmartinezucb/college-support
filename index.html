@@ -101,8 +101,11 @@
     top.append(name, pill);
     const meta = document.createElement('div');
     meta.className = 'meta';
-    meta.textContent = [t.supportType, t.adviser, t.location, formatTime(t.created)].filter(Boolean).join(' · ');
-    div.append(top, meta);
+    meta.textContent = [t.supportType, t.adviser, t.location].filter(Boolean).join(' · ');
+    const times = document.createElement('div');
+    times.className = 'times';
+    times.textContent = 'Posted ' + formatTime(t.created) + (t.completedAt ? ' · Completed ' + formatTime(t.completedAt) : '');
+    div.append(top, meta, times);
     return div;
   }
 
