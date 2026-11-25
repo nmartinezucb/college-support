@@ -20,10 +20,13 @@ Tickets start on row 3 (rows 1-2 are headers).
 | C | website | Support type (free response) |
 | D | website | Requesting support from: "Mr. Martinez", "Ms. Alanna", or "Mr. Martinez, Ms. Alanna" |
 | E | website | Location |
-| F | website, then advisers | Ticket Status dropdown: set to "Waiting for help" on submit; advisers change it to In-progress, Completed or Cancelled |
-| G | advisers | Notes (never shown on the board) |
+| F | script | Completed time, stamped automatically when G is set to Completed (cleared if G changes back) |
+| G | website, then advisers | Ticket Status dropdown: set to "Waiting for help" on submit; advisers change it to In-progress, Completed or Cancelled |
+| H | advisers | Notes (never shown on the board) |
 
-When an adviser changes the dropdown in column F, the board picks it up on its next refresh. Waiting for help and In-progress tickets show on the left. Completed and Cancelled tickets show on the right. A blank status shows as Waiting for help. Edit `CLOSED_STATUSES` in `Code.gs` to change that.
+When an adviser changes the dropdown in column G, the board picks it up on its next refresh. Waiting for help and In-progress tickets show on the left. Completed and Cancelled tickets show on the right. A blank status shows as Waiting for help. Edit `CLOSED_STATUSES` in `Code.gs` to change which statuses count as done.
+
+Each ticket card shows when it was posted and, once completed, when it was completed.
 
 The board shows first name and last initial only.
 

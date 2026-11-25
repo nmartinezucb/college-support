@@ -313,6 +313,13 @@ main {
   font-size: 0.88rem;
 }
 
+/* "Posted ... · Completed ..." line */
+.times {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
 /* ---------- Status pills ---------- */
 
 /* Default look, used for "Waiting for help" */
