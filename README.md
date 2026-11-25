@@ -16,10 +16,10 @@ Tickets start on row 3 (rows 1-2 are headers).
 | C | website | Support type |
 | D | website | Requesting support from |
 | E | website | Location |
-| F | advisers | Ticket Status dropdown |
+| F | website, then advisers | Ticket Status dropdown: set to "Waiting for help" on submit; advisers change it to In-progress, Completed or Cancelled |
 | G | advisers | Notes (never shown on the board) |
 
-When an adviser changes the dropdown in column F, the board picks it up on its next refresh. A status containing "complete", "done", "resolved", "closed" or "finished" goes in the Completed column; anything else, including blank, shows as In progress. Edit `COMPLETED_PATTERN` in `Code.gs` to change that.
+When an adviser changes the dropdown in column F, the board picks it up on its next refresh. Waiting for help and In-progress tickets show on the left. Completed and Cancelled tickets show on the right. A blank status shows as Waiting for help. Edit `CLOSED_STATUSES` in `Code.gs` to change that.
 
 The board shows first name and last initial only.
 

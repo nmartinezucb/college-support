@@ -15,9 +15,10 @@ const SHEET_NAME = 'Sheet1';
 const FIRST_DATA_ROW = 3;
 const STATUS_COLUMN = 6; // F
 
-// Any status in column F that matches this counts as "Completed" on the board.
-// Everything else (including blank) counts as "In progress".
-const COMPLETED_PATTERN = /complete|done|resolved|closed|finished/i;
+// Column F dropdown values.
+const DEFAULT_STATUS = 'Waiting for help';
+// These statuses go in the right-hand "Completed" column; everything else stays on the left.
+const CLOSED_STATUSES = ['Completed', 'Cancelled'];
 
 function getSheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -44,7 +45,7 @@ function nextRow_(sheet) {
   return FIRST_DATA_ROW;
 }
 
-/** Form submission: writes one ticket into columns A-E. */
+/** Form submission: writes one ticket into columns A-E and sets F to "Waiting for help". */
 function doPost(e) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
@@ -60,7 +61,7 @@ function doPost(e) {
 
     const sheet = getSheet_();
     const row = nextRow_(sheet);
-    sheet.getRange(row, 1, 1, 5).setValues([[new Date(), name, supportType, adviser, location]]);
+    sheet.getRange(row, 1, 1, 6).setValues([[new Date(), name, supportType, adviser, location, DEFAULT_STATUS]]);
     return json_({ ok: true, row: row });
   } catch (err) {
     return json_({ ok: false, error: String(err) });
@@ -87,8 +88,8 @@ function doGet() {
       supportType: String(r[2]),
       adviser: String(r[3]),
       location: String(r[4]),
-      status: status || 'Open',
-      completed: COMPLETED_PATTERN.test(status)
+      status: status || DEFAULT_STATUS,
+      completed: CLOSED_STATUSES.some(function (c) { return c.toLowerCase() === status.toLowerCase(); })
     });
   });
   return json_({ ok: true, tickets: tickets });

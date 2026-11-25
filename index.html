@@ -43,8 +43,10 @@
   .ticket strong { overflow-wrap: anywhere; }
   .meta { color: var(--muted); font-size: .88rem; }
   .pill { font-size: .78rem; font-weight: 600; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
-  .in-progress .pill { color: var(--progress); background: var(--progress-bg); }
-  .completed .pill { color: var(--done); background: var(--done-bg); }
+  .pill { color: var(--muted); background: var(--bg); border: 1px solid var(--line); }
+  .pill.s-in-progress { color: var(--progress); background: var(--progress-bg); border-color: transparent; }
+  .pill.s-completed { color: var(--done); background: var(--done-bg); border-color: transparent; }
+  .pill.s-cancelled { text-decoration: line-through; }
   .empty { color: var(--muted); font-style: italic; }
   .status-line { max-width: 1100px; margin: 0 auto; padding: 0 16px 12px; color: var(--muted); font-size: .85rem; }
 
@@ -151,7 +153,7 @@
     const name = document.createElement('strong');
     name.textContent = t.name + (mine ? ' (you)' : '');
     const pill = document.createElement('span');
-    pill.className = 'pill';
+    pill.className = 'pill s-' + t.status.toLowerCase().replace(/[^a-z]+/g, '-');
     pill.textContent = t.status;
     top.append(name, pill);
     const meta = document.createElement('div');
