@@ -3,7 +3,9 @@
 Ticket form and live status board for college application support (DCAC/EAOP).
 
 - `index.html`: the website's page structure and script. A form pops up on visit; after submitting, students see the status board (In progress on the left, Completed on the right, newest first). It refreshes every 5 seconds while open (every minute when the tab is in the background).
-- `styles.css`: all of the site's styling.
+- `styles.css`: all of the site's styling (DCAC/EAOP branding: navy header, gold accent, Inter for body text, Source Serif for headings).
+- `logo/`: white DCAC and EAOP logos for the navy header.
+- `type/`: the Inter and Source Serif 4 font files, which are both under the SIL Open Font License.
 - `apps-script/Code.gs`: the backend, a Google Apps Script web app bound to the ticket spreadsheet.
 
 ## How it uses the sheet
