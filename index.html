@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>College Application Support</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #fff; --text: #1d2330; --muted: #5d6677;
+    --line: #dde1e8; --accent: #2b59c3; --accent-text: #fff;
+    --progress: #b26a00; --progress-bg: #fff4e0;
+    --done: #1d7a43; --done-bg: #e5f5eb; --error: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14171d; --card: #1e222a; --text: #e8ebf0; --muted: #a0a8b6;
+      --line: #333a46; --accent: #6d93ff; --accent-text: #0d1220;
+      --progress: #f0b24d; --progress-bg: #3a2c12;
+      --done: #5ccf8a; --done-bg: #143222; --error: #ff8a80;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+         background: var(--bg); color: var(--text); }
+  header { padding: 20px 16px; max-width: 1100px; margin: 0 auto;
+           display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  h1 { font-size: 1.4rem; margin: 0; }
+  .sub { color: var(--muted); font-size: .9rem; }
+  button { font: inherit; cursor: pointer; border-radius: 8px; border: 0;
+           padding: 10px 18px; background: var(--accent); color: var(--accent-text); font-weight: 600; }
+  button.secondary { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  button:disabled { opacity: .6; cursor: wait; }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 0 16px 40px;
+         display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { main { grid-template-columns: 1fr; } }
+  .column { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; }
+  .column h2 { margin: 0 0 12px; font-size: 1.05rem; display: flex; justify-content: space-between; }
+  .count { color: var(--muted); font-weight: 400; }
+  .ticket { border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+  .ticket.mine { outline: 2px solid var(--accent); }
+  .ticket-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .ticket strong { overflow-wrap: anywhere; }
+  .meta { color: var(--muted); font-size: .88rem; }
+  .pill { font-size: .78rem; font-weight: 600; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+  .in-progress .pill { color: var(--progress); background: var(--progress-bg); }
+  .completed .pill { color: var(--done); background: var(--done-bg); }
+  .empty { color: var(--muted); font-style: italic; }
+  .status-line { max-width: 1100px; margin: 0 auto; padding: 0 16px 12px; color: var(--muted); font-size: .85rem; }
+
+  dialog { border: 0; border-radius: 14px; padding: 0; width: min(480px, calc(100vw - 32px));
+           background: var(--card); color: var(--text); }
+  dialog::backdrop { background: rgba(10, 14, 22, .55); }
+  form { padding: 24px; display: grid; gap: 14px; }
+  form h2 { margin: 0; }
+  label { display: grid; gap: 4px; font-weight: 600; font-size: .95rem; }
+  input, select { font: inherit; padding: 10px; border-radius: 8px; border: 1px solid var(--line);
+                  background: var(--bg); color: var(--text); width: 100%; }
+  .actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .error { color: var(--error); font-size: .9rem; min-height: 1.2em; margin: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>College Application Support</h1>
+    <div class="sub">Submit a ticket and watch its status here.</div>
+  </div>
+  <button id="newTicketBtn">New ticket</button>
+</header>
+
+<div class="status-line" id="statusLine">Loading tickets…</div>
+
+<main>
+  <section class="column in-progress">
+    <h2>In progress <span class="count" id="progressCount"></span></h2>
+    <div id="progressList"></div>
+  </section>
+  <section class="column completed">
+    <h2>Completed <span class="count" id="doneCount"></span></h2>
+    <div id="doneList"></div>
+  </section>
+</main>
+
+<dialog id="ticketDialog">
+  <form id="ticketForm">
+    <h2>Request support</h2>
+    <label>Name
+      <input name="name" required maxlength="100" autocomplete="name" placeholder="First and last name">
+    </label>
+    <!-- GUESS: support type options. Replace with the real list. -->
+    <label>Support type
+      <select name="supportType" required>
+        <option value="">Choose one…</option>
+        <option>UC Application</option>
+        <option>CSU Application</option>
+        <option>Common App</option>
+        <option>Personal Insight Questions / Essay</option>
+        <option>FAFSA / CADAA</option>
+        <option>Other</option>
+      </select>
+    </label>
+    <label>Requesting support from
+      <select name="adviser" required>
+        <option value="">Choose one…</option>
+        <option>Ms. A</option>
+        <option>Mr. Martinez</option>
+        <option>Either</option>
+      </select>
+    </label>
+    <!-- GUESS: Location goes to column E (it sits under "Request Info" in the sheet). -->
+    <label>Location
+      <input name="location" maxlength="100" placeholder="e.g. Library, Room 204">
+    </label>
+    <p class="error" id="formError"></p>
+    <div class="actions">
+      <button type="button" class="secondary" id="cancelBtn">View board</button>
+      <button type="submit" id="submitBtn">Submit ticket</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  // Paste the Apps Script web app URL (ends in /exec) here.
+  const SCRIPT_URL = 'PASTE_APPS_SCRIPT_WEB_APP_URL_HERE';
+  const REFRESH_MS = 20000;
+  const MY_TICKETS_KEY = 'myTicketRows';
+
+  const $ = (id) => document.getElementById(id);
+  const dialog = $('ticketDialog');
+  const form = $('ticketForm');
+
+  function myRows() {
+    try { return JSON.parse(localStorage.getItem(MY_TICKETS_KEY) || '[]'); } catch { return []; }
+  }
+  function rememberRow(row) {
+    try { localStorage.setItem(MY_TICKETS_KEY, JSON.stringify([...myRows(), row].slice(-20))); } catch {}
+  }
+
+  function formatTime(iso) {
+    const d = new Date(iso);
+    return isNaN(d) ? iso : d.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  }
+
+  function ticketEl(t, mine) {
+    const div = document.createElement('div');
+    div.className = 'ticket' + (mine ? ' mine' : '');
+    const top = document.createElement('div');
+    top.className = 'ticket-top';
+    const name = document.createElement('strong');
+    name.textContent = t.name + (mine ? ' (you)' : '');
+    const pill = document.createElement('span');
+    pill.className = 'pill';
+    pill.textContent = t.status;
+    top.append(name, pill);
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = [t.supportType, t.adviser, t.location, formatTime(t.created)].filter(Boolean).join(' · ');
+    div.append(top, meta);
+    return div;
+  }
+
+  function render(tickets) {
+    const mine = new Set(myRows());
+    const newestFirst = (a, b) => new Date(b.created) - new Date(a.created);
+    const groups = [
+      [tickets.filter(t => !t.completed).sort(newestFirst), $('progressList'), $('progressCount'), 'No tickets in progress.'],
+      [tickets.filter(t => t.completed).sort(newestFirst), $('doneList'), $('doneCount'), 'No completed tickets yet.'],
+    ];
+    for (const [list, el, countEl, emptyText] of groups) {
+      el.replaceChildren(...(list.length
+        ? list.map(t => ticketEl(t, mine.has(t.id)))
+        : [Object.assign(document.createElement('p'), { className: 'empty', textContent: emptyText })]));
+      countEl.textContent = list.length;
+    }
+  }
+
+  async function loadTickets() {
+    if (SCRIPT_URL.startsWith('PASTE')) {
+      $('statusLine').textContent = 'Not connected yet: set SCRIPT_URL in index.html.';
+      return;
+    }
+    try {
+      const res = await fetch(SCRIPT_URL);
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+      render(data.tickets);
+      $('statusLine').textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + '. Refreshes automatically.';
+    } catch (err) {
+      $('statusLine').textContent = 'Could not load tickets. Retrying shortly.';
+    }
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('formError').textContent = '';
+    if (SCRIPT_URL.startsWith('PASTE')) { $('formError').textContent = 'The form is not connected to the sheet yet.'; return; }
+    const payload = Object.fromEntries(new FormData(form));
+    $('submitBtn').disabled = true;
+    try {
+      // text/plain avoids a CORS preflight, which Apps Script does not answer.
+      const res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'Something went wrong.');
+      rememberRow(data.row);
+      form.reset();
+      dialog.close();
+      loadTickets();
+    } catch (err) {
+      $('formError').textContent = err.message || 'Could not submit. Please try again.';
+    } finally {
+      $('submitBtn').disabled = false;
+    }
+  });
+
+  $('newTicketBtn').addEventListener('click', () => dialog.showModal());
+  $('cancelBtn').addEventListener('click', () => dialog.close());
+
+  dialog.showModal(); // form pops up on first visit
+  loadTickets();
+  setInterval(loadTickets, REFRESH_MS);
+</script>
+</body>
+</html>
