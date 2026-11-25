@@ -79,7 +79,10 @@ function doPost(e) {
   }
 }
 
-/** Status board: returns every ticket with its status (G) and completed time (F). */
+/**
+ * Status board: returns every ticket with its status (G) and completed time (F).
+ * Support type (C) is left out on purpose: it stays private in the sheet.
+ */
 function doGet() {
   const sheet = getSheet_();
   const last = sheet.getLastRow();
@@ -95,7 +98,6 @@ function doGet() {
       created: toIso_(r[0]),
       completedAt: toIso_(r[COMPLETED_COLUMN - 1]),
       name: publicName_(r[1]),
-      supportType: String(r[2]),
       adviser: String(r[3]),
       location: String(r[4]),
       status: status || DEFAULT_STATUS,
