@@ -4,31 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>College Application Support</title>
+<link rel="preload" href="type/Inter.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header>
-  <div class="header">
-        <div class="header-left">
-            <div class="logo-img">
-                <img src="logo/DCAC all white.png">
-                <img src="logo/eaop white.png">
-            </div>
-        </div>
-        <div class="header-right">
-            <h1>College Application Support</h1>
-        </div>
-        </div>
+<header class="header">
+  <div class="header-left">
+    <div class="logo-img">
+      <img src="logo/dcac-white.png" alt="Destination College Advising Corps">
+      <img src="logo/eaop-white.png" alt="Early Academic Outreach Program">
     </div>
+  </div>
+  <div class="header-right">
+    <h1>College Application Support</h1>
+  </div>
 </header>
 
 <div class="newTicket">
-    <div class="sub">Submit a ticket and watch its status here.</div>
-  <div class="status-line" id="statusLine">Loading tickets…</div>
   <div>
-    <button id="newTicketBtn">New ticket</button>
+    <div class="sub">Submit a ticket and watch its status here.</div>
+    <div class="status-line" id="statusLine">Loading tickets…</div>
   </div>
+  <button id="newTicketBtn">New ticket</button>
 </div>
 
 <main>

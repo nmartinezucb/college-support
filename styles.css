@@ -1,24 +1,31 @@
 /* ==========================================================================
    College Application Support: ticket form and status board
+   DCAC / EAOP branding: navy header, gold accent, Inter + Source Serif
    ========================================================================== */
 
 /* ---------- Colors (light mode) ---------- */
 
 :root {
+  /* Brand */
+  --headersurface: #003262; /* navy header bar */
+  --header-text: #fff;
+  --accent: #ffc426;        /* gold: buttons, highlights */
+  --accent-text: #0d1220;   /* text on gold */
+
+  /* Page */
   --bg: #f5f6f8;
-  --headersurface: #003262;
   --card: #fff;
   --text: #003262;
   --muted: #5d6677;
   --line: #dde1e8;
-  --accent: #FFC426;
-  --accent-text: #0d1220;
+
+  /* Status pills */
   --progress: #b26a00;
   --progress-bg: #fff4e0;
   --done: #1d7a43;
   --done-bg: #e5f5eb;
-  --error: #b42318;
 
+  --error: #b42318;
 }
 
 /* ---------- Colors (dark mode) ---------- */
@@ -26,31 +33,55 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0f1923;
-    --headersurface: #003262;
     --card: #1e222a;
     --text: #e8e0d4;
     --muted: #a0a8b6;
     --line: #333a46;
-    --accent: #FFC426;
-    --accent-text: #0d1220;
+
     --progress: #f0b24d;
     --progress-bg: #3a2c12;
     --done: #5ccf8a;
     --done-bg: #143222;
+
     --error: #ff8a80;
   }
 }
 
-/* ---------- Type ---------- */
+/* ---------- Fonts ---------- */
+
+/* Variable fonts: one file covers every weight from 100 to 900 */
 @font-face {
-    font-family: Inter;
-    src: url(type/Inter-VariableFont_opsz\,wght.ttf);
+  font-family: "Inter";
+  src: url("type/Inter.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-    font-family: 'Source Serif';
-    src: url(type/SourceSerif4-VariableFont_opsz\,wght.ttf);
+  font-family: "Inter";
+  src: url("type/Inter-Italic.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
 }
+
+@font-face {
+  font-family: "Source Serif";
+  src: url("type/SourceSerif4.ttf") format("truetype");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Serif";
+  src: url("type/SourceSerif4-Italic.ttf") format("truetype");
+  font-weight: 200 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 /* ---------- Base ---------- */
 
 * {
@@ -58,89 +89,98 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
   margin: 0;
-  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 16px/1.5 "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   background: var(--bg);
   color: var(--text);
 }
 
-/* ---------- Header ---------- */
+/* Headings use the serif brand face */
+h1,
+h2 {
+  font-family: "Source Serif", Georgia, serif;
+}
 
+/* ---------- Header (navy bar with logos) ---------- */
 
 .header {
-    font-family: 'Source Serif', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 24px;
-    background: var(--headersurface);
-    border-bottom: 1px solid var(--border);
-    z-index: 1000;
-    flex-shrink: 0
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: var(--headersurface);
 }
 
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px
-}
-
-.logo {
-    width: 32px;
-    height: 32px;
-    background: var(--accent);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    box-shadow: 0 0 16px var(--accent-glow)
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .logo-img {
-    display: flex;
-    align-items: center;
-    gap: 50px;
+  display: flex;
+  align-items: center;
+  gap: 50px;
 }
 
 .logo-img img {
-    height: 40px;
-    width: auto;
-    display: block;
-    object-fit: contain;
-}
-
-.title {
-    font-family: 'Source Serif';
-    font-size: 24px;
-    font-weight: 400;
-    color: var(--text);
-    letter-spacing: -0.02em
-}
-
-.header-right {
-    font-family: 'Source Serif', sans-serif;
-    display: flex;
-    align-items: center;
-    gap: 12px
+  display: block;
+  height: 40px;
+  width: auto;
+  object-fit: contain;
 }
 
 h1 {
   margin: 0;
-  font-size: 1.4rem;
-  color: #fff
+  color: var(--header-text);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Smaller logos and title on phones */
+@media (max-width: 700px) {
+  .header {
+    padding: 14px 16px;
+  }
+
+  .logo-img {
+    gap: 24px;
+  }
+
+  .logo-img img {
+    height: 30px;
+  }
+
+  h1 {
+    font-size: 1.25rem;
+  }
+}
+
+/* ---------- Greeting bar (intro text + New ticket button) ---------- */
+
+.newTicket {
+  width: min(1068px, calc(100% - 32px));
+  margin: 20px auto 16px;
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
 }
 
 .sub {
-  color: var(--muted);
-  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .status-line {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 16px 12px;
   color: var(--muted);
   font-size: 0.85rem;
 }
@@ -156,6 +196,10 @@ button {
   font: inherit;
   font-weight: 600;
   cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(0.95);
 }
 
 button.secondary {
@@ -198,12 +242,16 @@ main {
 .column h2 {
   margin: 0 0 12px;
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  font-size: 1.05rem;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .count {
   color: var(--muted);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 1rem;
   font-weight: 400;
 }
 
@@ -211,30 +259,6 @@ main {
   color: var(--muted);
   font-style: italic;
 }
-
-/* New Ticket Greeting */
-
-.newTicket {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 16px 40px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  min-width: 0;
-  padding: 16px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-}
-
-/* Stack the columns on phones */
-@media (max-width: 700px) {
-  main {
-    grid-template-columns: 1fr;
-  }
-}
-
 
 /* ---------- Ticket cards ---------- */
 
@@ -245,9 +269,9 @@ main {
   border-radius: 10px;
 }
 
-/* Highlights tickets submitted from this browser */
+/* Highlights tickets submitted from this browser with a gold stripe */
 .ticket.mine {
-  outline: 2px solid var(--accent);
+  border-left: 4px solid var(--accent);
 }
 
 .ticket-top {
@@ -302,13 +326,14 @@ dialog {
   width: min(480px, calc(100vw - 32px));
   padding: 0;
   border: 0;
+  border-top: 6px solid var(--headersurface);
   border-radius: 14px;
   background: var(--card);
   color: var(--text);
 }
 
 dialog::backdrop {
-  background: rgba(10, 14, 22, 0.55);
+  background: rgba(0, 20, 40, 0.6);
 }
 
 form {
@@ -319,6 +344,8 @@ form {
 
 form h2 {
   margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 label {
@@ -339,6 +366,12 @@ textarea {
   color: var(--text);
   font: inherit;
   resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 /* Adviser checkboxes (Mr. Martinez / Ms. Alanna) */
