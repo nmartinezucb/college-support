@@ -56,7 +56,12 @@
   form { padding: 24px; display: grid; gap: 14px; }
   form h2 { margin: 0; }
   label { display: grid; gap: 4px; font-weight: 600; font-size: .95rem; }
-  input, select { font: inherit; padding: 10px; border-radius: 8px; border: 1px solid var(--line);
+  fieldset.choices { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px 10px; margin: 0; }
+  fieldset.choices legend { font-weight: 600; font-size: .95rem; padding: 0 4px; }
+  .hint { color: var(--muted); font-weight: 400; }
+  label.choice { display: flex; gap: 8px; align-items: center; font-weight: 400; padding: 4px 0; cursor: pointer; }
+  label.choice input { width: auto; margin: 0; accent-color: var(--accent); }
+  input, select, textarea { font: inherit; resize: vertical; padding: 10px; border-radius: 8px; border: 1px solid var(--line);
                   background: var(--bg); color: var(--text); width: 100%; }
   .actions { display: flex; gap: 10px; justify-content: flex-end; }
   .error { color: var(--error); font-size: .9rem; min-height: 1.2em; margin: 0; }
@@ -91,27 +96,14 @@
     <label>Name
       <input name="name" required maxlength="100" autocomplete="name" placeholder="First and last name">
     </label>
-    <!-- GUESS: support type options. Replace with the real list. -->
     <label>Support type
-      <select name="supportType" required>
-        <option value="">Choose one…</option>
-        <option>UC Application</option>
-        <option>CSU Application</option>
-        <option>Common App</option>
-        <option>Personal Insight Questions / Essay</option>
-        <option>FAFSA / CADAA</option>
-        <option>Other</option>
-      </select>
+      <textarea name="supportType" required maxlength="300" rows="3" placeholder="What do you need help with?"></textarea>
     </label>
-    <label>Requesting support from
-      <select name="adviser" required>
-        <option value="">Choose one…</option>
-        <option>Ms. A</option>
-        <option>Mr. Martinez</option>
-        <option>Either</option>
-      </select>
-    </label>
-    <!-- GUESS: Location goes to column E (it sits under "Request Info" in the sheet). -->
+    <fieldset class="choices">
+      <legend>Requesting support from <span class="hint">(choose one or both)</span></legend>
+      <label class="choice"><input type="checkbox" name="adviser" value="Mr. Martinez"> Mr. Martinez</label>
+      <label class="choice"><input type="checkbox" name="adviser" value="Ms. Alanna"> Ms. Alanna</label>
+    </fieldset>
     <label>Location
       <input name="location" maxlength="100" placeholder="e.g. Library, Room 204">
     </label>
@@ -198,7 +190,10 @@
     e.preventDefault();
     $('formError').textContent = '';
     if (SCRIPT_URL.startsWith('PASTE')) { $('formError').textContent = 'The form is not connected to the sheet yet.'; return; }
-    const payload = Object.fromEntries(new FormData(form));
+    const fd = new FormData(form);
+    const advisers = fd.getAll('adviser');
+    if (!advisers.length) { $('formError').textContent = 'Choose Mr. Martinez, Ms. Alanna, or both.'; return; }
+    const payload = { name: fd.get('name'), supportType: fd.get('supportType'), adviser: advisers.join(', '), location: fd.get('location') };
     $('submitBtn').disabled = true;
     try {
       // text/plain avoids a CORS preflight, which Apps Script does not answer.

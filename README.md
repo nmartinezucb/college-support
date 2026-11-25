@@ -13,8 +13,8 @@ Tickets start on row 3 (rows 1-2 are headers).
 |---|---|---|
 | A | website | Time created (set automatically) |
 | B | website | Name |
-| C | website | Support type |
-| D | website | Requesting support from |
+| C | website | Support type (free response) |
+| D | website | Requesting support from: "Mr. Martinez", "Ms. Alanna", or "Mr. Martinez, Ms. Alanna" |
 | E | website | Location |
 | F | website, then advisers | Ticket Status dropdown: set to "Waiting for help" on submit; advisers change it to In-progress, Completed or Cancelled |
 | G | advisers | Notes (never shown on the board) |

@@ -7,7 +7,7 @@
  * Copy the /exec URL into SCRIPT_URL at the top of index.html.
  *
  * Sheet layout (rows 1-2 are headers, tickets start on row 3):
- *   A Time Created | B Name | C Support Type | D Requesting support to
+ *   A Time Created | B Name | C Support Type | D Requesting support to (Mr. Martinez and/or Ms. Alanna)
  *   E Location     | F Ticket Status (adviser dropdown) | G Notes
  */
 
@@ -52,7 +52,7 @@ function doPost(e) {
   try {
     const data = JSON.parse((e && e.postData && e.postData.contents) || '{}');
     const name = clean_(data.name, 100);
-    const supportType = clean_(data.supportType, 100);
+    const supportType = clean_(data.supportType, 300);
     const adviser = clean_(data.adviser, 100);
     const location = clean_(data.location, 100);
     if (!name || !supportType || !adviser) {
