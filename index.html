@@ -118,7 +118,8 @@
 <script>
   // Paste the Apps Script web app URL (ends in /exec) here.
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzTCS3TgsneYRxHWnQAMg8k1jucM81ijqitArmMvjdx2ccqZRO8P3BYXtHHJzT5GFo4/exec';
-  const REFRESH_MS = 20000;
+  const REFRESH_MS = 5000;        // while the tab is visible
+  const HIDDEN_REFRESH_MS = 60000; // while the tab is in the background
   const MY_TICKETS_KEY = 'myTicketRows';
 
   const $ = (id) => document.getElementById(id);
@@ -170,7 +171,15 @@
     }
   }
 
+  let lastPayload = '';
+  let loading = false;
   async function loadTickets() {
+    if (loading) return;
+    loading = true;
+    try { await fetchTickets(); } finally { loading = false; }
+  }
+
+  async function fetchTickets() {
     if (SCRIPT_URL.startsWith('PASTE')) {
       $('statusLine').textContent = 'Not connected yet: set SCRIPT_URL in index.html.';
       return;
@@ -179,7 +188,8 @@
       const res = await fetch(SCRIPT_URL);
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
-      render(data.tickets);
+      const payload = JSON.stringify(data.tickets);
+      if (payload !== lastPayload) { lastPayload = payload; render(data.tickets); }
       $('statusLine').textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + '. Refreshes automatically.';
     } catch (err) {
       $('statusLine').textContent = 'Could not load tickets. Retrying shortly.';
@@ -215,8 +225,19 @@
   $('cancelBtn').addEventListener('click', () => dialog.close());
 
   dialog.showModal(); // form pops up on first visit
-  loadTickets();
-  setInterval(loadTickets, REFRESH_MS);
+  // Poll every 5s while visible, slow down in the background, and refresh
+  // immediately when someone comes back to the tab.
+  let timer;
+  function schedule() {
+    clearTimeout(timer);
+    timer = setTimeout(async () => { await loadTickets(); schedule(); },
+      document.hidden ? HIDDEN_REFRESH_MS : REFRESH_MS);
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) loadTickets();
+    schedule();
+  });
+  loadTickets().then(schedule);
 </script>
 </body>
 </html>
