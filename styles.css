@@ -6,29 +6,32 @@
 
 :root {
   --bg: #f5f6f8;
+  --headersurface: #003262;
   --card: #fff;
-  --text: #1d2330;
+  --text: #003262;
   --muted: #5d6677;
   --line: #dde1e8;
-  --accent: #2b59c3;
-  --accent-text: #fff;
+  --accent: #FFC426;
+  --accent-text: #0d1220;
   --progress: #b26a00;
   --progress-bg: #fff4e0;
   --done: #1d7a43;
   --done-bg: #e5f5eb;
   --error: #b42318;
+
 }
 
 /* ---------- Colors (dark mode) ---------- */
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #14171d;
+    --bg: #0f1923;
+    --headersurface: #003262;
     --card: #1e222a;
-    --text: #e8ebf0;
+    --text: #e8e0d4;
     --muted: #a0a8b6;
     --line: #333a46;
-    --accent: #6d93ff;
+    --accent: #FFC426;
     --accent-text: #0d1220;
     --progress: #f0b24d;
     --progress-bg: #3a2c12;
@@ -38,6 +41,16 @@
   }
 }
 
+/* ---------- Type ---------- */
+@font-face {
+    font-family: Inter;
+    src: url(type/Inter-VariableFont_opsz\,wght.ttf);
+}
+
+@font-face {
+    font-family: 'Source Serif';
+    src: url(type/SourceSerif4-VariableFont_opsz\,wght.ttf);
+}
 /* ---------- Base ---------- */
 
 * {
@@ -45,6 +58,7 @@
 }
 
 body {
+  font-family: 'Inter', sans-serif;
   margin: 0;
   font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
   background: var(--bg);
@@ -53,20 +67,69 @@ body {
 
 /* ---------- Header ---------- */
 
-header {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
+
+.header {
+    font-family: 'Source Serif', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: var(--headersurface);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000;
+    flex-shrink: 0
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 0 16px var(--accent-glow)
+}
+
+.logo-img {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+}
+
+.logo-img img {
+    height: 40px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+}
+
+.title {
+    font-family: 'Source Serif';
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: -0.02em
+}
+
+.header-right {
+    font-family: 'Source Serif', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 12px
 }
 
 h1 {
   margin: 0;
   font-size: 1.4rem;
+  color: #fff
 }
 
 .sub {
@@ -148,6 +211,30 @@ main {
   color: var(--muted);
   font-style: italic;
 }
+
+/* New Ticket Greeting */
+
+.newTicket {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  min-width: 0;
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+/* Stack the columns on phones */
+@media (max-width: 700px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 /* ---------- Ticket cards ---------- */
 
